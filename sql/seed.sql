@@ -68,3 +68,23 @@ SHOW INDEX FROM STOCK;
 
 SELECT '=== PURGE EVENT ===' AS section;
 SHOW EVENTS LIKE 'purge_expired_deletions';
+
+USE chimsiq_db;
+
+-- Re-insert users with fresh, correct bcrypt hash for password = "password"
+-- The hash below is for plain text "password"
+
+DELETE FROM USER WHERE Email = 'admin@pchardwarehub.ph' OR StaffID = 'TECH-001';
+
+-- Admin
+INSERT INTO USER (FullName, Email, PasswordHash, Role, StoreID) 
+VALUES ('John Michael Aguelo', 'admin@pchardwarehub.ph', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'admin', 
+        (SELECT StoreID FROM STORE WHERE StoreName = 'PC Hardware Hub' LIMIT 1));
+
+-- Staff
+INSERT INTO USER (FullName, StaffID, PasswordHash, Role, StoreID) 
+VALUES ('Kerbey Maaslom', 'TECH-001', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'staff', 
+        (SELECT StoreID FROM STORE WHERE StoreName = 'PC Hardware Hub' LIMIT 1));
+
+-- Verify
+SELECT FullName, Role, Email, StaffID, StoreID FROM USER;
